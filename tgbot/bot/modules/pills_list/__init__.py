@@ -1,0 +1,1 @@
+from bot.modules.pills_list import PillsList

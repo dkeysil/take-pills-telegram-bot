@@ -1,0 +1,1 @@
+from bot.modules.new_pill import NewPill

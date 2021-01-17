@@ -1,0 +1,27 @@
+version: '3'
+services:
+  tgbot:
+    build:
+      context: tgbot
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    container_name: take-pills-bot
+    environment:
+      MONGODB_DATABASE: project
+      MONGODB_USERNAME: mongorootuser
+      MONGODB_PASSWORD: PswdRoot
+      MONGODB_HOSTNAME: mongodb
+      MONGODB_PORT: 27017
+    links:
+      - mongodb
+  
+  mongodb:
+    image: mongo:latest
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongorootuser
+      MONGO_INITDB_ROOT_PASSWORD: PswdRoot
+      MONGODB_DATA_DIR: /data/db
+      MONDODB_LOG_DIR: /dev/null
+    volumes:
+      - ./mongodb/data:/data/db

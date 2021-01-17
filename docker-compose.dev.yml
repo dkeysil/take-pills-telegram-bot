@@ -1,0 +1,10 @@
+version: '3'
+services:
+  tgbot:
+    volumes:
+      - ./tgbot:/tgbot
+
+  mongodb:
+    command: mongod --auth
+    ports:
+      - 27017:27017
