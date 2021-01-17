@@ -133,3 +133,6 @@ dmypy.json
 
 # MongoDB
 mongodb/
+
+# docker-compose
+docker-compose.creds.yml
