@@ -2,5 +2,4 @@ version: '3'
 services:
   tgbot:
     environment:
-      BOT_API_KEY: "1482678682:AAGeF-xBRZigmeOX3O3STPkGitTB8VpuVFY"
-#      BOT_API_KEY: "telegram-bot-api-token"
+      BOT_API_KEY: "telegram-bot-api-token"
