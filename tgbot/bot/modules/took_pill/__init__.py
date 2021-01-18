@@ -1,0 +1,1 @@
+from bot.modules.took_pill import TookPill

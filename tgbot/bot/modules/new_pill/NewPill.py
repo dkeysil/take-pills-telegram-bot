@@ -142,6 +142,7 @@ async def save_pills_time_list(callback_query: types.CallbackQuery, state: FSMCo
     result = await db.Pills.insert_one({
         "title": title,
         "time_list": pill_time_list,
+        "time_status": [],
         "user": user.get("_id")
     })
     logger.info(f"save pills user_id={callback_query.from_user.id} "
