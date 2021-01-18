@@ -12,6 +12,7 @@ services:
       MONGODB_PASSWORD: PswdRoot
       MONGODB_HOSTNAME: mongodb
       MONGODB_PORT: 27017
+      TZ: Europe/Moscow
     links:
       - mongodb
   
@@ -23,5 +24,6 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: PswdRoot
       MONGODB_DATA_DIR: /data/db
       MONDODB_LOG_DIR: /dev/null
+      TZ: Europe/Moscow
     volumes:
       - ./mongodb/data:/data/db

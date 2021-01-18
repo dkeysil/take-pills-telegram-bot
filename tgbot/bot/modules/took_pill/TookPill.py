@@ -22,6 +22,8 @@ async def took_pill_callback_handler(callback_query: types.CallbackQuery):
     index = pill.get("time_list").index(t)
 
     time_status = pill.get("time_status")
+    if time_status[index]:
+        return await callback_query.answer("I've already processed that time.")
     time_status[index] = True
 
     result = await db.Pills.update_one({
