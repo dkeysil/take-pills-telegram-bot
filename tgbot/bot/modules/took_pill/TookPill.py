@@ -39,7 +39,7 @@ async def took_pill_callback_handler(callback_query: types.CallbackQuery):
 
     good_words = ["You did a great job!", "Awesome!", "Good for you!", "I hope it's because of me."]
     await callback_query.message.reply("I remembered that you took a pill. {}".format(
-        good_words[random.randint(0, len(good_words))]))
+        good_words[random.randint(0, len(good_words) - 1)]))
 
     await callback_query.message.edit_reply_markup(reply_markup=types.InlineKeyboardMarkup())
 
