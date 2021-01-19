@@ -7,6 +7,11 @@ import random
 
 @dp.callback_query_handler(lambda callback_query: callback_query.data.startswith('took'))
 async def took_pill_callback_handler(callback_query: types.CallbackQuery):
+    """
+    handle took pill callback and update in db
+    :param callback_query:
+    :return:
+    """
     db = SingletonClient.get_data_base()
 
     split_data = callback_query.data.split(',')

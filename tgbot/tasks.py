@@ -3,8 +3,7 @@ from bot import bot, types
 from motor_client import SingletonClient
 from loguru import logger
 from bson import ObjectId
-import asyncio
-from datetime import time, datetime
+from datetime import time, datetime, timedelta
 
 
 @aiocron.crontab("*/5 * * * *")
@@ -23,8 +22,6 @@ async def pills_check():
                 "time_status": []
             }
         })
-
-    # todo сделать цикл пробегающийся по таблеткам и отправлять напоминания с кнопкой подветрждения, если не нажата, то присылать еще раз
 
     async for pill in db.Pills.find():
         user = await db.Users.find_one({
@@ -46,7 +43,8 @@ async def pills_check():
                 # if user accept time don't send notification
                 continue
 
-            if now > time(t.hour + 1, t.minute):
+            _t = datetime(2021, 1, 1, t.hour, t.minute) + timedelta(hours=1)
+            if now > time(_t.hour, _t.minute):
                 # If more than one hour has elapsed after taking the pill and the person has not taken it
                 time_status[num] = True
             else:
