@@ -7,6 +7,11 @@ import random
 
 @dp.callback_query_handler(lambda callback_query: callback_query.data.startswith('took'))
 async def took_pill_callback_handler(callback_query: types.CallbackQuery):
+    """
+    handle took pill callback and update in db
+    :param callback_query:
+    :return:
+    """
     db = SingletonClient.get_data_base()
 
     split_data = callback_query.data.split(',')
@@ -22,6 +27,8 @@ async def took_pill_callback_handler(callback_query: types.CallbackQuery):
     index = pill.get("time_list").index(t)
 
     time_status = pill.get("time_status")
+    if time_status[index]:
+        return await callback_query.answer("I've already processed that time.")
     time_status[index] = True
 
     result = await db.Pills.update_one({
@@ -37,7 +44,7 @@ async def took_pill_callback_handler(callback_query: types.CallbackQuery):
 
     good_words = ["You did a great job!", "Awesome!", "Good for you!", "I hope it's because of me."]
     await callback_query.message.reply("I remembered that you took a pill. {}".format(
-        good_words[random.randint(0, len(good_words))]))
+        good_words[random.randint(0, len(good_words) - 1)]))
 
     await callback_query.message.edit_reply_markup(reply_markup=types.InlineKeyboardMarkup())
 

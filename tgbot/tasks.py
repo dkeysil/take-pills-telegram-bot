@@ -3,8 +3,7 @@ from bot import bot, types
 from motor_client import SingletonClient
 from loguru import logger
 from bson import ObjectId
-import asyncio
-from datetime import time, datetime
+from datetime import time, datetime, timedelta
 
 
 @aiocron.crontab("*/5 * * * *")
@@ -23,8 +22,6 @@ async def pills_check():
                 "time_status": []
             }
         })
-
-    # todo сделать цикл пробегающийся по таблеткам и отправлять напоминания с кнопкой подветрждения, если не нажата, то присылать еще раз
 
     async for pill in db.Pills.find():
         user = await db.Users.find_one({
@@ -46,6 +43,16 @@ async def pills_check():
                 # if user accept time don't send notification
                 continue
 
+            _t = datetime(2021, 1, 1, t.hour, t.minute) + timedelta(hours=1)
+            if now > time(_t.hour, _t.minute):
+                # If more than one hour has elapsed after taking the pill and the person has not taken it
+                time_status[num] = True
+            else:
+                text = "You have to take <b>{}</b> pill at {}.".format(pill.get("title"), ti)
+                markup = types.InlineKeyboardMarkup()
+                markup.add(types.InlineKeyboardButton("I took 💊", callback_data=f"took,{pill.get('_id')},{ti}"))
+                await bot.send_message(user.get("telegram_id"), text=text, reply_markup=markup)
+
             result = await db.Pills.update_one({
                 "_id": ObjectId(pill.get("_id"))
             },
@@ -57,9 +64,3 @@ async def pills_check():
 
             logger.info(f"user_id={user.get('telegram_id')} pill_id={pill.get('_id')} "
                         f"update_one result={result.acknowledged} time_status={time_status}")
-
-            text = "You have to take <b>{}</b> pill at {}.".format(pill.get("title"), ti)
-            markup = types.InlineKeyboardMarkup()
-            markup.add(types.InlineKeyboardButton("I took 💊", callback_data=f"took,{pill.get('_id')},{ti}"))
-
-            await bot.send_message(user.get("telegram_id"), text=text, reply_markup=markup)
