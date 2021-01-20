@@ -2,6 +2,7 @@ from bot import dp, types
 from motor_client import SingletonClient
 from loguru import logger
 from bson import ObjectId
+from bot.modules.start.Start import start
 
 
 @dp.message_handler(commands=['pills'])
@@ -12,6 +13,12 @@ async def pills_list(message: types.Message):
     :return:
     """
     logger.info(f"/pills user_id={message.from_user.id}")
+    db = SingletonClient.get_data_base()
+    user = await db.Users.find_one({
+        "telegram_id": message.from_user.id
+    })
+    if not user:
+        await start(message)
 
     db = SingletonClient.get_data_base()
     user = await db.Users.find_one({
@@ -29,6 +36,8 @@ async def pills_list(message: types.Message):
     """
     string = "List of your current pills:"
     markup = get_pills_list_markup(markup, await get_pills(0, user.get("_id")))
+    if not await get_pills(0, user.get("_id")):
+        return await message.answer("You haven't added the pills yet. Try via /new.")
 
     left_button = types.InlineKeyboardButton(
         text='❌', callback_data=f'pl,l,0,{user.get("_id")}')

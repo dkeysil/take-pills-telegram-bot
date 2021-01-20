@@ -4,7 +4,7 @@ from loguru import logger
 from aiogram.dispatcher import FSMContext
 from datetime import time
 from motor_client import SingletonClient
-from bson import ObjectId
+from bot.modules.start.Start import start
 
 
 class NewPill(StatesGroup):
@@ -20,6 +20,12 @@ async def new_pill(message: types.Message):
     :return:
     """
     logger.info(f"/new pill user_id={message.from_user.id}")
+    db = SingletonClient.get_data_base()
+    user = await db.Users.find_one({
+        "telegram_id": message.from_user.id
+    })
+    if not user:
+        await start(message)
 
     await message.answer("Please, send me pill title.\nIf you want to cancel this operation type /cancel.")
     await NewPill.title.set()
@@ -148,6 +154,7 @@ async def save_pills_time_list(callback_query: types.CallbackQuery, state: FSMCo
     logger.info(f"save pills user_id={callback_query.from_user.id} "
                 f"insert_one result={result.acknowledged} id={result.inserted_id}")
 
+    await callback_query.message.edit_reply_markup(reply_markup=types.InlineKeyboardMarkup())
     await callback_query.message.answer("The pill is successfully saved, wait for reminders.")
     await state.finish()
     await callback_query.answer()
