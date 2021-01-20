@@ -14,9 +14,9 @@ async def pills_check():
     """
     logger.info("pills check started")
     db = SingletonClient.get_data_base()
-    now = time(datetime.now().hour, datetime.now().minute)
+    now = datetime(2021, 1, 1, datetime.now().hour, datetime.now().minute)
 
-    if now == time(0, 0):
+    if now.hour == 0 and now.minute == 0:
         result = await db.Pills.update_many({}, {
             "$set": {
                 "time_status": []
@@ -29,8 +29,10 @@ async def pills_check():
         })
 
         time_status = pill.get("time_status")
+        logger.info(pill)
         for num, ti in enumerate(pill.get("time_list")):
             t = time.fromisoformat(ti)
+            t = datetime(2021, 1, 1, t.hour, t.minute)
             if t > now:
                 continue
             try:
@@ -44,7 +46,7 @@ async def pills_check():
                 continue
 
             _t = datetime(2021, 1, 1, t.hour, t.minute) + timedelta(hours=1)
-            if now > time(_t.hour, _t.minute):
+            if now > _t:
                 # If more than one hour has elapsed after taking the pill and the person has not taken it
                 time_status[num] = True
             else:
