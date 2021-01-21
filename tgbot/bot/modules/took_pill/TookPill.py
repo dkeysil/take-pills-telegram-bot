@@ -43,7 +43,7 @@ async def took_pill_callback_handler(callback_query: types.CallbackQuery):
                 f"update_one result={result.acknowledged} time_status={time_status}")
 
     good_words = ["You did a great job!", "Awesome!", "Good for you!", "I hope you feel better."]
-    await callback_query.message.reply("I've reminded you to take your medicines!. {}".format(
+    await callback_query.message.reply("I've reminded you to take your medicines! {}".format(
         good_words[random.randint(0, len(good_words) - 1)]))
 
     await callback_query.message.edit_reply_markup(reply_markup=types.InlineKeyboardMarkup())

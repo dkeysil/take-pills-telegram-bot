@@ -117,7 +117,7 @@ async def handle_pill_delete_callback_query(callback_query: types.CallbackQuery)
     logger.info(f"delete pill user_id={callback_query.from_user.id} "
                 f"delete_one result={result.acknowledged} count={result.deleted_count}")
     await callback_query.message.edit_reply_markup(reply_markup=types.InlineKeyboardMarkup())
-    await callback_query.message.answer("The pill was successfully removed..")
+    await callback_query.message.answer("The pill was successfully removed.")
     await callback_query.answer()
 
 
