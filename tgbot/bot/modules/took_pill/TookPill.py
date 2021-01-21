@@ -5,7 +5,7 @@ from loguru import logger
 import random
 
 
-@dp.callback_query_handler(lambda callback_query: callback_query.data.startswith('took'))
+@dp.callback_query_handler(lambda callback_query: callback_query.data.startswith('took'), state='*')
 async def took_pill_callback_handler(callback_query: types.CallbackQuery):
     """
     handle took pill callback and update in db
