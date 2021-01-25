@@ -4,6 +4,7 @@ from motor_client import SingletonClient
 from loguru import logger
 from bson import ObjectId
 from datetime import time, datetime, timedelta
+from aiogram.utils.exceptions import BotBlocked
 
 
 @aiocron.crontab("*/5 * * * *")
@@ -53,7 +54,15 @@ async def pills_check():
                 text = "You have to take <b>{}</b> pill at {}.".format(pill.get("title"), ti)
                 markup = types.InlineKeyboardMarkup()
                 markup.add(types.InlineKeyboardButton("I took 💊", callback_data=f"took,{pill.get('_id')},{ti}"))
-                await bot.send_message(user.get("telegram_id"), text=text, reply_markup=markup)
+                try:
+                    await bot.send_message(user.get("telegram_id"), text=text, reply_markup=markup)
+                except BotBlocked:
+                    result = await db.Pills.delete_many({
+                        'user': pill.get("user")
+                    })
+                    return logger.info(
+                        f"Bot blocked by user user_id={user.get('telegram_id')} pill_id={pill.get('_id')} "
+                        f"delete result={result.acknowledged} delete count={result.deleted_count}")
 
             result = await db.Pills.update_one({
                 "_id": ObjectId(pill.get("_id"))
