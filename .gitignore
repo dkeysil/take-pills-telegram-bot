@@ -136,3 +136,4 @@ mongodb/
 
 # docker-compose
 docker-compose.creds.yml
+settings.json

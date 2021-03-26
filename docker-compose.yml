@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 services:
   tgbot:
     build:
@@ -13,8 +13,8 @@ services:
       MONGODB_HOSTNAME: mongodb
       MONGODB_PORT: 27017
       TZ: Europe/Moscow
-    links:
-      - mongodb
+    networks:
+      - bot
   
   mongodb:
     image: mongo:latest
@@ -27,3 +27,10 @@ services:
       TZ: Europe/Moscow
     volumes:
       - ./mongodb/data:/data/db
+    networks:
+      bot:
+        aliases:
+          - mongodb
+
+networks:
+  bot:

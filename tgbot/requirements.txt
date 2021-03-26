@@ -1,11 +1,14 @@
 aiocron==1.3
 aiogram==2.11.2
+aiogram-logging==0.0.1
 aiohttp==3.7.3
+aioinflux==0.9.0
 async-timeout==3.0.1
 attrs==20.3.0
 Babel==2.9.0
 certifi==2020.12.5
 chardet==3.0.4
+ciso8601==2.1.3
 croniter==1.0.1
 idna==3.1
 loguru==0.5.3
