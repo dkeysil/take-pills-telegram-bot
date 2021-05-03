@@ -7,7 +7,7 @@ from datetime import time, datetime, timedelta
 from aiogram.utils.exceptions import BotBlocked
 
 
-@aiocron.crontab("*/1 * * * *")
+@aiocron.crontab("*/5 * * * *")
 async def pills_check():
     """
     Check pills from db every 5 minutes and send notifications if need
