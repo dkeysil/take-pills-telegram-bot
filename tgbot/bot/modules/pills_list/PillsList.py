@@ -121,6 +121,40 @@ async def handle_pill_delete_callback_query(callback_query: types.CallbackQuery)
     await callback_query.answer()
 
 
+@dp.callback_query_handler(lambda callback_query: callback_query.data.split(',')[0] == 'pil' and
+                                                  callback_query.data.endswith("pause"))
+async def handle_pill_pause_callback_query(callback_query: types.CallbackQuery):
+    """
+    handle pause pill callback and it from db
+    :param callback_query:
+    :return:
+    """
+    logger.info(f"user_id={callback_query.from_user.id} data={callback_query.data}")
+    pill_id = ObjectId(callback_query.data.split(',')[1])
+
+    db = SingletonClient.get_data_base()
+
+    pill = await db.Pills.find_one({'_id': pill_id})
+    if pill.get('paused'):
+        pill_paused = False
+    else:
+        pill_paused = True
+
+    result = await db.Pills.update_one({'_id': pill.get('_id')}, {
+        '$set': {"paused": pill_paused}
+    })
+    logger.info(f"pause pill user_id={callback_query.from_user.id} "
+                f"pause result={result.acknowledged}")
+    await callback_query.message.edit_reply_markup(reply_markup=types.InlineKeyboardMarkup())
+    text = "The pill was successfully "
+    if pill_paused:
+        text += "paused."
+    else:
+        text += "unpaused."
+    await callback_query.message.answer(text)
+    await callback_query.answer()
+
+
 @dp.callback_query_handler(lambda callback_query: callback_query.data.split(',')[0] == 'pil')
 async def handle_pill_callback_query(callback_query: types.CallbackQuery):
     """
@@ -135,6 +169,8 @@ async def handle_pill_callback_query(callback_query: types.CallbackQuery):
     pill = await db.Pills.find_one({
         "_id": pill_id
     })
+    if not pill:
+        return callback_query.answer("I can't find that pill, sorry.")
 
     string = "Title: {}\n".format(pill.get("title"))
 
@@ -143,7 +179,11 @@ async def handle_pill_callback_query(callback_query: types.CallbackQuery):
         string += "\n{}".format(time)
 
     markup = types.InlineKeyboardMarkup()
-
+    if not pill.get('paused'):
+        pause_text = "Pause pill"
+    else:
+        pause_text = "Unpause pill"
+    markup.add(types.InlineKeyboardButton(pause_text, callback_data=f"{callback_query.data},pause"))
     markup.add(types.InlineKeyboardButton("Delete pill", callback_data=f"{callback_query.data},delete"))
 
     await callback_query.message.edit_text(string, reply_markup=markup)

@@ -7,7 +7,7 @@ from datetime import time, datetime, timedelta
 from aiogram.utils.exceptions import BotBlocked
 
 
-@aiocron.crontab("*/5 * * * *")
+@aiocron.crontab("*/1 * * * *")
 async def pills_check():
     """
     Check pills from db every 5 minutes and send notifications if need
@@ -24,7 +24,7 @@ async def pills_check():
             }
         })
 
-    async for pill in db.Pills.find():
+    async for pill in db.Pills.find({"paused": {"$ne": True}}):
         user = await db.Users.find_one({
             "_id": ObjectId(pill.get("user"))
         })
